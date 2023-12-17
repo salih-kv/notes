@@ -1,9 +1,13 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home";
 
 function App() {
   return (
-    <>
-      <h1 className="underline text-purple-500 font-bold ">Notes</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
