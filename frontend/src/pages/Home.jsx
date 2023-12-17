@@ -1,27 +1,44 @@
 import { FaPlus } from "react-icons/fa6";
 import { Note } from "../components/Note";
+import { CreateNote } from "../components/CreateNote";
+import { useEffect } from "react";
+import instance from "../axios/instance";
+import { useNotes } from "../context/NotesContext";
 
 export const Home = () => {
+  const { notes, setNotes, openModal } = useNotes();
+
+  const fetchNotes = async () => {
+    const response = await instance.get("/notes");
+    setNotes(response.data);
+  };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
   return (
     <div className="min-h-screen flex justify-between">
-      <nav className="w-28 min-h-screen flex justify-center border-r px-4 py-16">
-        <div>
-          <button className="bg-black p-3 rounded-full text-white text-2xl">
+      <nav className="w-20 h-20 hidden md:min-h-screen md:flex justify-center md:border-r px-4 py-12">
+        <div className="fixed">
+          <button
+            onClick={openModal}
+            className="bg-black p-2 rounded-full text-white text-2xl"
+          >
             <FaPlus />
           </button>
         </div>
       </nav>
-      <main className="w-full p-16">
-        <header className="mb-12">
-          <h1 className="text-5xl font-medium">Notes</h1>
+      <CreateNote />
+      <main className="w-full p-12">
+        <header className="mb-4">
+          <h1 className="text-5xl font-medium mb-8">Notes</h1>
+          <input type="text" className="input" placeholder="Search" />
         </header>
-        <section className="grid grid-cols-4 gap-6">
-          <Note />
-          <Note />
-          <Note />
-          <Note />
-          <Note />
-          <Note />
+        <section className="notes-cont gap-6">
+          {notes?.map((note) => (
+            <Note key={note._id} {...note} />
+          ))}
         </section>
       </main>
     </div>
