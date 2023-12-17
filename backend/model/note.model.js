@@ -19,13 +19,16 @@ const noteSchema = Schema({
     ref: "User",
     required: true,
   },
+  isStarred: {
+    type: Boolean,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
   updatedAt: {
     type: Date,
-    default: null,
+    default: Date.now,
   },
 });
 

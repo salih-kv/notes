@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 
 export const signupUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user) {
@@ -11,7 +11,6 @@ export const signupUser = async (req, res) => {
     }
 
     const newUser = await User.create({
-      name,
       email,
       password,
       profilePic: `https://api.multiavatar.com/${uuidv4().slice(0, 6)}.png`,
