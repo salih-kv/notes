@@ -1,13 +1,17 @@
-import { MdModeEdit } from "react-icons/md";
-import { IoMdStar, IoMdStarOutline } from "react-icons/io";
-import { HiOutlineTrash } from "react-icons/hi2";
+import {
+  HiOutlineArchiveBoxArrowDown,
+  HiOutlinePencil,
+  HiOutlineStar,
+  HiOutlineTrash,
+  HiStar,
+} from "react-icons/hi2";
 import { formatDate } from "../utils/formatDate";
 import { useNotes } from "../context/NotesContext";
 import instance from "../axios/instance";
 
 export const Note = ({ note }) => {
   const { setNotes, openModal, setIsUpdate, setNoteToUpdate } = useNotes();
-  const { title, content, isStarred, updatedAt, bgColor } = note;
+  const { title, content, isStarred, updatedAt } = note;
   const formattedDate = formatDate(updatedAt);
 
   const editNote = () => {
@@ -16,7 +20,7 @@ export const Note = ({ note }) => {
     openModal();
   };
 
-  const StarNote = async () => {
+  const starNote = async () => {
     const response = await instance.patch(`/notes/${note._id}`, {
       isStarred: !isStarred,
     });
@@ -27,41 +31,54 @@ export const Note = ({ note }) => {
     );
   };
 
+  const deleteNote = async () => {
+    const response = await instance.delete(`/notes/${note._id}`);
+    const updatedNote = response.data;
+
+    setNotes((notes) =>
+      notes.map((note) => (note._id === updatedNote._id ? updatedNote : note))
+    );
+  };
+
   return (
     <div
-      className={`group flex flex-col min-h-80 bg-amber-300 rounded-3xl p-6 xl:p-8 text-[#282828] text-lg`}
+      className={`group flex flex-col min-h-80 bg-white border shadow-sm rounded-xl p-2 lg:p-3 text-[#282828] text-lg`}
     >
-      <header className="flex justify-between items-center h-10 mb-4">
-        <h2 className="font-semibold text-sm md:text-xl">{title}</h2>
-        <span
-          onClick={StarNote}
-          className={`${
-            isStarred
-              ? "bg-black border-black"
-              : "bg-transparent border-black hidden"
-          } border-2 p-1.5 rounded-full text-xl ml-4 group-hover:block`}
-        >
-          {isStarred ? (
-            <IoMdStar className="text-yellow-300" />
-          ) : (
-            <IoMdStarOutline className="text-black" />
-          )}
+      <header className="flex justify-between items-center h-10">
+        <div>
+          <h2 className="font-semibold text-base">{title}</h2>
+          <p className=" text-gray-500 text-xs">{formattedDate}</p>
+        </div>
+        <span>
+          <button
+            onClick={editNote}
+            className="text-gray-400 text-sm hidden group-hover:flex"
+          >
+            <HiOutlinePencil />
+          </button>
         </span>
       </header>
-      <div className="flex-1">
-        <p className="text-sm md:text-xl">{content}</p>
+      <div className="flex-1 py-4" onClick={editNote}>
+        <p className="text-sm">{content}</p>
       </div>
-      <footer className="flex justify-between items-center mt-4">
-        <p className=" text-gray-700 text-xs md:text-base">{formattedDate}</p>
-        <button
-          className="bg-black p-2 rounded-full text-white text-xl"
-          onClick={editNote}
-        >
-          <MdModeEdit />
-        </button>
-        {/* <button>
-          <HiOutlineTrash />
-        </button> */}
+      <footer className="flex justify-between items-center">
+        <div>
+          <button onClick={starNote} className="text-sm lg:text-base">
+            {isStarred ? (
+              <HiStar className="text-yellow-400" />
+            ) : (
+              <HiOutlineStar className="text-gray-400" />
+            )}
+          </button>
+        </div>
+        <div className="hidden group-hover:flex space-x-4 lg:space-x-6 text-gray-400 text-sm lg:text-base">
+          <button>
+            <HiOutlineArchiveBoxArrowDown />
+          </button>
+          <button onClick={deleteNote}>
+            <HiOutlineTrash />
+          </button>
+        </div>
       </footer>
     </div>
   );

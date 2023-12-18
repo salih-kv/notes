@@ -3,6 +3,10 @@ import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 import { Home } from "./pages/Home";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Starred } from "./pages/Starred";
+import { Archive } from "./pages/Archive";
+import { Trash } from "./pages/Trash";
+import { AllNotes } from "./pages/AllNotes";
 
 function App() {
   return (
@@ -11,7 +15,12 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
-          <Route index element={<Home />} />
+          <Route element={<Home />}>
+            <Route path="/" element={<AllNotes />} />
+            <Route path="/starred" element={<Starred />} />
+            <Route path="/archive" element={<Archive />} />
+            <Route path="/trash" element={<Trash />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

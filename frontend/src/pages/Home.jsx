@@ -1,15 +1,13 @@
-import { FaPlus } from "react-icons/fa6";
-import { FaRegUserCircle } from "react-icons/fa";
-import { Note } from "../components/Note";
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { Nav } from "../components/Nav";
 import { CreateUpdateNote } from "../components/CreateUpdateNote";
-import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import instance from "../axios/instance";
+import { useEffect } from "react";
 import { useNotes } from "../context/NotesContext";
-import { useAuth } from "../context/AuthContext";
 
 export const Home = () => {
-  const { user } = useAuth();
-  const { notes, setNotes, openModal } = useNotes();
+  const { setNotes } = useNotes();
 
   const fetchNotes = async () => {
     const response = await instance.get("/notes");
@@ -19,45 +17,21 @@ export const Home = () => {
   useEffect(() => {
     fetchNotes();
   }, []);
-
-  const latestNotes = notes
-    ? notes
-        .slice()
-        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    : [];
-
-  // ! store in localstorage
-  console.log(user);
-
   return (
     <div className="min-h-screen flex justify-between">
-      <nav className="w-20 min-h-screen md:border-r px-4 py-8">
-        <div className="flex flex-col items-center justify-between h-full">
-          <button
-            onClick={openModal}
-            className="bg-black p-2 rounded-full text-white text-2xl"
-          >
-            <FaPlus />
-          </button>
-          <button className="text-center rounded-full w-8 h-8">
-            {user?.profilePic ? (
-              <img src={user?.profilePic} alt="" />
-            ) : (
-              <FaRegUserCircle className="text-3xl" />
-            )}
-          </button>
-        </div>
-      </nav>
+      <Nav />
       <CreateUpdateNote />
-      <main className="w-full py-8 px-12">
-        <header className="mb-4">
-          <h1 className="text-5xl font-medium mb-4">Notes</h1>
-          <input type="text" className="input" placeholder="Search" />
+      <main className="flex-1 ml-14 md:ml-44">
+        <header className="fixed w-full h-16 border-b px-12 flex items-center bg-white">
+          <input
+            type="text"
+            className="border rounded-md px-2 pl-10 text-sm py-1.5 w-[300px] md:min-w-[500px] placeholder:text-black/60 placeholder:tracking-wide"
+            placeholder="Search notes, dates, keyword..."
+          />
+          <HiMagnifyingGlass className="absolute left-16" />
         </header>
-        <section className="notes-cont gap-6">
-          {latestNotes?.map((note) => (
-            <Note key={note._id} note={note} />
-          ))}
+        <section className="notes-cont gap-6 mt-16 p-12">
+          <Outlet />
         </section>
       </main>
     </div>

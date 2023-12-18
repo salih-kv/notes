@@ -7,6 +7,7 @@ export const NotesProvider = ({ children }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [noteToUpdate, setNoteToUpdate] = useState(null);
+  const [isDirty, setIsDirty] = useState(false);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -15,6 +16,7 @@ export const NotesProvider = ({ children }) => {
   const closeModal = () => {
     setModalIsOpen(false);
     setIsUpdate(false);
+    setIsDirty(false);
     setNoteToUpdate(null);
   };
 
@@ -30,6 +32,8 @@ export const NotesProvider = ({ children }) => {
         setNoteToUpdate,
         openModal,
         closeModal,
+        isDirty,
+        setIsDirty,
       }}
     >
       {children}

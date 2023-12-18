@@ -6,14 +6,14 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const initialToken = Cookies.get("userToken");
-  const existingUser = Cookies.get("user");
+  // const existingUser = localStorage.getItem("user");
 
   const [authState, setAuthState] = useState({
     isLoggedIn: !!initialToken,
     userToken: initialToken,
   });
 
-  const [user, setUser] = useState(existingUser);
+  const [user, setUser] = useState();
 
   const signup = async (inputValues) => {
     try {
@@ -28,12 +28,6 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data.user);
 
         Cookies.set("userToken", response.data.token, {
-          sameSite: "None",
-          secure: true,
-          expires: 1,
-        });
-
-        Cookies.set("user", response.data.user, {
           sameSite: "None",
           secure: true,
           expires: 1,
@@ -57,12 +51,6 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data.user);
 
         Cookies.set("userToken", response.data.token, {
-          sameSite: "None",
-          secure: true,
-          expires: 1,
-        });
-
-        Cookies.set("user", response.data.user, {
           sameSite: "None",
           secure: true,
           expires: 1,

@@ -5,15 +5,20 @@ import instance from "../axios/instance";
 import { useNotes } from "../context/NotesContext";
 
 export const CreateUpdateNote = () => {
-  const { setNotes, modalIsOpen, closeModal, isUpdate, noteToUpdate } =
-    useNotes();
+  const {
+    setNotes,
+    modalIsOpen,
+    closeModal,
+    isUpdate,
+    noteToUpdate,
+    isDirty,
+    setIsDirty,
+  } = useNotes();
 
   const [inputValues, setInputValues] = useState({
     title: "",
     content: "",
   });
-
-  const [isDirty, setIsDirty] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +88,7 @@ export const CreateUpdateNote = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-2 text-left align-middle shadow-xl transition-all">
                   <input
                     type="text"
                     className="input !mb-0"
@@ -93,7 +98,7 @@ export const CreateUpdateNote = () => {
                     onChange={handleInputChange}
                   />
                   <textarea
-                    rows="5"
+                    rows="4"
                     className="input !mt-0 resize-none"
                     placeholder="Take a note..."
                     name="content"
@@ -101,10 +106,10 @@ export const CreateUpdateNote = () => {
                     onChange={handleInputChange}
                   ></textarea>
 
-                  <div className="mt-4 flex justify-end items-center ">
+                  <div className="mt-2 flex justify-end items-center ">
                     <button
                       onClick={handleSubmit}
-                      className="bg-black p-3 rounded-full text-white disabled:bg-black/60"
+                      className="bg-black p-2 rounded-full text-white disabled:bg-black/60"
                       disabled={isDirty ? false : true}
                     >
                       <FaCheck />

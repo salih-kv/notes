@@ -55,15 +55,23 @@ export const updateNote = async (req, res) => {
   }
 };
 
-export const deleteNote = async (req, res) => {
+export const noteToTrash = async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedNote = await Note.findByIdAndDelete({ _id: id });
+    // Update the note to mark it for deletion after 30 days
+    const scheduledDeletionDate = new Date();
+    scheduledDeletionDate.setDate(scheduledDeletionDate.getDate() + 30);
 
-    if (!deletedNote)
+    const updatedNote = await Note.findByIdAndUpdate(
+      { _id: id },
+      { scheduledForDeletion: scheduledDeletionDate },
+      { new: true }
+    );
+
+    if (!updatedNote)
       return res.status(404).json({ message: "Note not found" });
 
-    res.status(204).json(deletedNote);
+    res.status(200).json(updatedNote);
   } catch (err) {
     res.status(500).json({ error: err.message || "Internal Server Error" });
   }
