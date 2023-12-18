@@ -22,6 +22,9 @@ const noteSchema = Schema({
   isStarred: {
     type: Boolean,
   },
+  bgColor: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

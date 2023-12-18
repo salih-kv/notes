@@ -1,20 +1,45 @@
 import { MdModeEdit } from "react-icons/md";
 import { IoMdStar, IoMdStarOutline } from "react-icons/io";
+import { HiOutlineTrash } from "react-icons/hi2";
 import { formatDate } from "../utils/formatDate";
 import { useNotes } from "../context/NotesContext";
+import instance from "../axios/instance";
 
-export const Note = ({ title, content, updatedAt, isStarred }) => {
+export const Note = ({ note }) => {
+  const { setNotes, openModal, setIsUpdate, setNoteToUpdate } = useNotes();
+  const { title, content, isStarred, updatedAt, bgColor } = note;
   const formattedDate = formatDate(updatedAt);
-  const { openModal } = useNotes();
+
+  const editNote = () => {
+    setIsUpdate(true);
+    setNoteToUpdate(note);
+    openModal();
+  };
+
+  const StarNote = async () => {
+    const response = await instance.patch(`/notes/${note._id}`, {
+      isStarred: !isStarred,
+    });
+    const updatedNote = response.data;
+
+    setNotes((notes) =>
+      notes.map((note) => (note._id === updatedNote._id ? updatedNote : note))
+    );
+  };
 
   return (
-    <div className="flex flex-col min-h-80 bg-green-200 rounded-3xl p-8 text-[#282828] text-lg">
-      <header className="flex justify-between items-center">
-        <h2 className="mb-4 font-bold">{title}</h2>
+    <div
+      className={`group flex flex-col min-h-80 bg-amber-300 rounded-3xl p-6 xl:p-8 text-[#282828] text-lg`}
+    >
+      <header className="flex justify-between items-center h-10 mb-4">
+        <h2 className="font-semibold text-sm md:text-xl">{title}</h2>
         <span
+          onClick={StarNote}
           className={`${
-            isStarred ? "bg-black border-black" : "bg-transparent border-black"
-          } border-2 p-1.5 rounded-full text-xl ml-4 mb-4`}
+            isStarred
+              ? "bg-black border-black"
+              : "bg-transparent border-black hidden"
+          } border-2 p-1.5 rounded-full text-xl ml-4 group-hover:block`}
         >
           {isStarred ? (
             <IoMdStar className="text-yellow-300" />
@@ -24,16 +49,19 @@ export const Note = ({ title, content, updatedAt, isStarred }) => {
         </span>
       </header>
       <div className="flex-1">
-        <p className="font-medium">{content}</p>
+        <p className="text-sm md:text-xl">{content}</p>
       </div>
       <footer className="flex justify-between items-center mt-4">
-        <p className=" text-gray-700">{formattedDate}</p>
+        <p className=" text-gray-700 text-xs md:text-base">{formattedDate}</p>
         <button
           className="bg-black p-2 rounded-full text-white text-xl"
-          onClick={openModal}
+          onClick={editNote}
         >
           <MdModeEdit />
         </button>
+        {/* <button>
+          <HiOutlineTrash />
+        </button> */}
       </footer>
     </div>
   );

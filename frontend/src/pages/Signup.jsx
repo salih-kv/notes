@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 
 export const Signup = () => {
   const navigate = useNavigate();
-  const { user, signup } = useAuth();
+  const { authState, signup } = useAuth();
 
   const [inputValues, setInputValues] = useState({
     email: "",
@@ -19,8 +19,8 @@ export const Signup = () => {
   };
 
   useEffect(() => {
-    user.isLoggedIn && navigate("/");
-  }, [user, navigate]);
+    authState.isLoggedIn && navigate("/");
+  }, [authState, navigate]);
 
   return (
     <div

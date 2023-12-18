@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { authState, login } = useAuth();
 
   const [inputValues, setInputValues] = useState({
     email: "",
@@ -20,8 +20,8 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    user.isLoggedIn && navigate("/");
-  }, [user, navigate]);
+    authState.isLoggedIn && navigate("/");
+  }, [authState, navigate]);
   return (
     <div
       style={{

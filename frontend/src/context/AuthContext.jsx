@@ -6,23 +6,34 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const initialToken = Cookies.get("userToken");
+  const existingUser = Cookies.get("user");
 
-  const [user, setUser] = useState({
+  const [authState, setAuthState] = useState({
     isLoggedIn: !!initialToken,
     userToken: initialToken,
   });
+
+  const [user, setUser] = useState(existingUser);
 
   const signup = async (inputValues) => {
     try {
       const response = await instance.post("/signup", inputValues);
       if (response.status && response.data.token) {
-        setUser((user) => ({
-          ...user,
+        setAuthState((authState) => ({
+          ...authState,
           isLoggedIn: true,
           userToken: response.data.token,
         }));
 
+        setUser(response.data.user);
+
         Cookies.set("userToken", response.data.token, {
+          sameSite: "None",
+          secure: true,
+          expires: 1,
+        });
+
+        Cookies.set("user", response.data.user, {
           sameSite: "None",
           secure: true,
           expires: 1,
@@ -37,11 +48,13 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await instance.post("/login", inputValues);
       if (response.status && response.data.token) {
-        setUser((user) => ({
-          ...user,
+        setAuthState((authState) => ({
+          ...authState,
           isLoggedIn: true,
           userToken: response.data.token,
         }));
+
+        setUser(response.data.user);
 
         Cookies.set("userToken", response.data.token, {
           sameSite: "None",
@@ -49,7 +62,11 @@ export const AuthProvider = ({ children }) => {
           expires: 1,
         });
 
-        console.log(user);
+        Cookies.set("user", response.data.user, {
+          sameSite: "None",
+          secure: true,
+          expires: 1,
+        });
       }
     } catch (error) {
       console.error("Error:", error.response.data);
@@ -58,11 +75,13 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      setUser((user) => ({
-        ...user,
+      setAuthState((authState) => ({
+        ...authState,
         isLoggedIn: false,
         userToken: null,
       }));
+
+      setUser(() => null);
 
       Cookies.remove("userToken", {
         sameSite: "None",
@@ -74,7 +93,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signup, login, logout }}>
+    <AuthContext.Provider value={{ authState, user, signup, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
