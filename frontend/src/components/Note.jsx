@@ -1,17 +1,35 @@
 import {
   HiOutlineArchiveBoxArrowDown,
-  HiOutlinePencil,
-  HiOutlineStar,
+  HiOutlineArchiveBoxXMark,
   HiOutlineTrash,
-  HiStar,
+  HiTrash,
 } from "react-icons/hi2";
+import { BsPinAngle, BsPinAngleFill } from "react-icons/bs";
+import { FaTrashArrowUp } from "react-icons/fa6";
+import { MdOutlineColorLens, MdOutlineFormatColorReset } from "react-icons/md";
 import { formatDate } from "../utils/formatDate";
 import { useNotes } from "../context/NotesContext";
 import instance from "../axios/instance";
 
+const bgcolors = [
+  { name: "default", color: "#fff" },
+  { name: "yellow", color: "#faafa8" },
+  { name: "amber", color: "#f39f76" },
+  { name: "orange", color: "#fff8b8" },
+  { name: "green", color: "#e2f6d3" },
+];
+
 export const Note = ({ note }) => {
-  const { setNotes, openModal, setIsUpdate, setNoteToUpdate } = useNotes();
-  const { title, content, isStarred, updatedAt } = note;
+  const {
+    setNotes,
+    openModal,
+    setIsUpdate,
+    setNoteToUpdate,
+    showColorOptions,
+    setShowColorOptions,
+  } = useNotes();
+  const { title, content, bgColor, isPinned, isArchive, isDeleted, updatedAt } =
+    note;
   const formattedDate = formatDate(updatedAt);
 
   const editNote = () => {
@@ -20,64 +38,123 @@ export const Note = ({ note }) => {
     openModal();
   };
 
-  const starNote = async () => {
+  const updateNote = async (field, value) => {
     const response = await instance.patch(`/notes/${note._id}`, {
-      isStarred: !isStarred,
+      [field]: value,
     });
     const updatedNote = response.data;
 
     setNotes((notes) =>
-      notes.map((note) => (note._id === updatedNote._id ? updatedNote : note))
+      notes.map((n) => (n._id === updatedNote._id ? updatedNote : n))
     );
   };
 
-  const deleteNote = async () => {
-    const response = await instance.delete(`/notes/${note._id}`);
-    const updatedNote = response.data;
+  const pinNote = () => updateNote("isPinned", !isPinned);
+  const archiveNote = () => updateNote("isArchive", !isArchive);
+  const deleteNote = () => updateNote("isDeleted", !isDeleted);
+  const setBgColor = (color) => updateNote("bgColor", color);
 
-    setNotes((notes) =>
-      notes.map((note) => (note._id === updatedNote._id ? updatedNote : note))
-    );
+  const deleteNoteForever = async () => {
+    await instance.delete(`/notes/${note._id}`);
+    setNotes((notes) => notes.filter((n) => n._id !== note._id));
+  };
+
+  const toggleColorOptions = (noteId) => {
+    setShowColorOptions((prev) => {
+      const updatedState = { [noteId]: !prev[noteId] };
+      Object.keys(prev).forEach((key) => {
+        if (key !== noteId) {
+          updatedState[key] = false;
+        }
+      });
+
+      return updatedState;
+    });
   };
 
   return (
     <div
-      className={`group flex flex-col min-h-80 bg-white border shadow-sm rounded-xl p-2 lg:p-3 text-[#282828] text-lg`}
+      style={{ backgroundColor: bgColor }}
+      className={`group flex flex-col max-h-96 border shadow-sm rounded-xl p-4 select-none`}
     >
       <header className="flex justify-between items-center h-10">
-        <div>
+        <div className="w-full">
           <h2 className="font-semibold text-base">{title}</h2>
-          <p className=" text-gray-500 text-xs">{formattedDate}</p>
+          {/* <p className=" text-gray-500 text-xs">{formattedDate}</p> */}
         </div>
         <span>
-          <button
-            onClick={editNote}
-            className="text-gray-400 text-sm hidden group-hover:flex"
-          >
-            <HiOutlinePencil />
-          </button>
+          {!isDeleted && (
+            <button onClick={pinNote} className="text-lg btn-small">
+              {isPinned ? (
+                <BsPinAngleFill className="text-amber-400" />
+              ) : (
+                <BsPinAngle className="text-gray-800 hidden group-hover:flex" />
+              )}
+            </button>
+          )}
         </span>
       </header>
-      <div className="flex-1 py-4" onClick={editNote}>
+      <div
+        className="flex-1 pb-2 mb-2 cursor-pointer overflow-y-hidden"
+        onClick={editNote}
+      >
         <p className="text-sm">{content}</p>
       </div>
-      <footer className="flex justify-between items-center">
-        <div>
-          <button onClick={starNote} className="text-sm lg:text-base">
-            {isStarred ? (
-              <HiStar className="text-yellow-400" />
-            ) : (
-              <HiOutlineStar className="text-gray-400" />
-            )}
+      <footer className=" group-hover:visible flex justify-between items-center h-6 text-gray-800 lg:text-lg">
+        <div className="flex items-center relative">
+          <button
+            className="btn-small"
+            onClick={() => toggleColorOptions(note._id)}
+          >
+            <MdOutlineColorLens />
           </button>
+          {showColorOptions[note._id] && (
+            <div className="absolute top-7 h-10 bg-white shadow-lg flex items-center justify-between gap-1 p-2 rounded-2xl">
+              {bgcolors?.map(({ name, color }) => (
+                <div
+                  key={color}
+                  style={{
+                    backgroundColor: color,
+                  }}
+                  onClick={() => setBgColor(color)}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center border cursor-pointer`}
+                >
+                  {color === "#fff" && (
+                    <MdOutlineFormatColorReset className="" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="hidden group-hover:flex space-x-4 lg:space-x-6 text-gray-400 text-sm lg:text-base">
-          <button>
-            <HiOutlineArchiveBoxArrowDown />
-          </button>
-          <button onClick={deleteNote}>
-            <HiOutlineTrash />
-          </button>
+        <div className="flex space-x-2 ">
+          <div className="hover:text-gray-800">
+            {!isDeleted && (
+              <button onClick={archiveNote} className="btn-small">
+                {isArchive ? (
+                  <HiOutlineArchiveBoxXMark />
+                ) : (
+                  <HiOutlineArchiveBoxArrowDown />
+                )}
+              </button>
+            )}
+          </div>
+          <div>
+            {isDeleted ? (
+              <div className="flex items-center space-x-2">
+                <button onClick={deleteNote} className="btn-small">
+                  <FaTrashArrowUp className="text-sm" />
+                </button>
+                <button onClick={deleteNoteForever} className="btn-small">
+                  <HiTrash />
+                </button>
+              </div>
+            ) : (
+              <button onClick={deleteNote} className="btn-small">
+                <HiOutlineTrash />
+              </button>
+            )}
+          </div>
         </div>
       </footer>
     </div>
