@@ -41,7 +41,20 @@ export const updateNote = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
   try {
-    const userId = req.user.id;
+    if ("isDeleted" in updateData) {
+      // Update the note to mark it for deletion after 7 days
+      const scheduledDeletionDate = new Date();
+      scheduledDeletionDate.setDate(scheduledDeletionDate.getDate() + 7);
+
+      const update = updateData.isDeleted
+        ? { scheduledForDeletion: scheduledDeletionDate }
+        : { scheduledForDeletion: null };
+
+      await Note.findByIdAndUpdate({ _id: id }, update, {
+        new: true,
+      });
+    }
+
     const updatedNote = await Note.findByIdAndUpdate({ _id: id }, updateData, {
       new: true,
     });
@@ -55,23 +68,16 @@ export const updateNote = async (req, res) => {
   }
 };
 
-export const noteToTrash = async (req, res) => {
+export const deleteNote = async (req, res) => {
   const { id } = req.params;
   try {
-    // Update the note to mark it for deletion after 30 days
-    const scheduledDeletionDate = new Date();
-    scheduledDeletionDate.setDate(scheduledDeletionDate.getDate() + 30);
+    const deletedNote = await Note.findByIdAndDelete(id);
 
-    const updatedNote = await Note.findByIdAndUpdate(
-      { _id: id },
-      { scheduledForDeletion: scheduledDeletionDate },
-      { new: true }
-    );
-
-    if (!updatedNote)
+    if (!deletedNote) {
       return res.status(404).json({ message: "Note not found" });
+    }
 
-    res.status(200).json(updatedNote);
+    res.status(200).json(deletedNote);
   } catch (err) {
     res.status(500).json({ error: err.message || "Internal Server Error" });
   }

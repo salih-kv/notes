@@ -17,11 +17,12 @@ export const Home = () => {
   useEffect(() => {
     fetchNotes();
   }, []);
+
   return (
     <div className="min-h-screen flex justify-between">
       <Nav />
       <CreateUpdateNote />
-      <main className="flex-1 ml-14 md:ml-44">
+      <main className="flex-1 sm:ml-14 md:ml-44">
         <header className="fixed w-full h-16 border-b px-12 flex items-center bg-white">
           <input
             type="text"
@@ -30,9 +31,7 @@ export const Home = () => {
           />
           <HiMagnifyingGlass className="absolute left-16" />
         </header>
-        <section className="notes-cont gap-6 mt-16 p-12">
-          <Outlet />
-        </section>
+        <Outlet />
       </main>
     </div>
   );

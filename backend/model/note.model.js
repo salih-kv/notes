@@ -20,11 +20,19 @@ const noteSchema = Schema(
       ref: "User",
       required: true,
     },
-    isStarred: {
+    bgColor: {
+      type: String,
+      default: "#fff",
+    },
+    isPinned: {
       type: Boolean,
       default: false,
     },
     isArchive: {
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
       type: Boolean,
       default: false,
     },

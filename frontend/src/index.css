@@ -61,3 +61,7 @@ form {
 .btn {
   @apply bg-gray-700 text-white font-semibold py-2 px-4 w-full rounded hover:bg-gray-600;
 }
+
+.btn-small {
+  @apply p-2 rounded-full hover:bg-black/10;
+}

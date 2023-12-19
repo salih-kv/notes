@@ -4,9 +4,9 @@ import cors from "cors";
 import mongoose from "mongoose";
 import {
   createNote,
+  deleteNote,
   getNoteById,
   getNotesByUserId,
-  noteToTrash,
   updateNote,
 } from "./controller/note.controller.js";
 import {
@@ -46,7 +46,7 @@ app.post("/notes", verifyToken, createNote);
 app.get("/notes", verifyToken, getNotesByUserId);
 app.get("/notes/:id", verifyToken, getNoteById);
 app.patch("/notes/:id", verifyToken, updateNote);
-app.delete("/notes/:id", verifyToken, noteToTrash);
+app.delete("/notes/:id", verifyToken, deleteNote);
 
 // Connect Server
 app.listen(PORT, () => console.log(`SERVER RUNNING ON PORT:${PORT}`));
