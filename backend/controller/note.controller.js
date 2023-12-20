@@ -82,3 +82,26 @@ export const deleteNote = async (req, res) => {
     res.status(500).json({ error: err.message || "Internal Server Error" });
   }
 };
+
+export const searchNote = async (req, res) => {
+  const { query } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const results = await Note.find({
+      $and: [
+        { user: userId },
+        {
+          $or: [
+            { title: { $regex: query, $options: "i" } },
+            { content: { $regex: query, $options: "i" } },
+          ],
+        },
+      ],
+    });
+
+    res.status(200).json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  }
+};

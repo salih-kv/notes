@@ -7,7 +7,6 @@ import {
 import { BsPinAngle, BsPinAngleFill } from "react-icons/bs";
 import { FaTrashArrowUp } from "react-icons/fa6";
 import { MdOutlineColorLens, MdOutlineFormatColorReset } from "react-icons/md";
-import { formatDate } from "../utils/formatDate";
 import { useNotes } from "../context/NotesContext";
 import instance from "../axios/instance";
 
@@ -19,7 +18,7 @@ const bgcolors = [
   { name: "green", color: "#e2f6d3" },
 ];
 
-export const Note = ({ note }) => {
+export const Note = ({ note, searchQuery }) => {
   const {
     setNotes,
     openModal,
@@ -28,9 +27,7 @@ export const Note = ({ note }) => {
     showColorOptions,
     setShowColorOptions,
   } = useNotes();
-  const { title, content, bgColor, isPinned, isArchive, isDeleted, updatedAt } =
-    note;
-  const formattedDate = formatDate(updatedAt);
+  const { title, content, bgColor, isPinned, isArchive, isDeleted } = note;
 
   const editNote = () => {
     setIsUpdate(true);
@@ -72,6 +69,19 @@ export const Note = ({ note }) => {
     });
   };
 
+  const highlightSearchTerm = (text, searchTerm) => {
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+    return text.split(regex).map((letter, index) =>
+      regex.test(letter) ? (
+        <span key={index} className="bg-[#fdd663]">
+          {letter}
+        </span>
+      ) : (
+        letter
+      )
+    );
+  };
+
   return (
     <div
       style={{ backgroundColor: bgColor }}
@@ -79,8 +89,9 @@ export const Note = ({ note }) => {
     >
       <header className="flex justify-between items-center h-10">
         <div className="w-full">
-          <h2 className="font-semibold text-base">{title}</h2>
-          {/* <p className=" text-gray-500 text-xs">{formattedDate}</p> */}
+          <h2 className="font-medium text-base">
+            {searchQuery ? highlightSearchTerm(title, searchQuery) : title}
+          </h2>
         </div>
         <span>
           {!isDeleted && (
@@ -98,7 +109,9 @@ export const Note = ({ note }) => {
         className="flex-1 pb-2 mb-2 cursor-pointer overflow-y-hidden"
         onClick={editNote}
       >
-        <p className="text-sm">{content}</p>
+        <p className="text-sm">
+          {searchQuery ? highlightSearchTerm(content, searchQuery) : content}
+        </p>
       </div>
       <footer className=" group-hover:visible flex justify-between items-center h-6 text-gray-800 lg:text-lg">
         <div className="flex items-center relative">

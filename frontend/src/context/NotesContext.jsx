@@ -9,6 +9,7 @@ export const NotesProvider = ({ children }) => {
   const [noteToUpdate, setNoteToUpdate] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
   const [showColorOptions, setShowColorOptions] = useState({});
+  const [gridView, setGridView] = useState(false);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -37,6 +38,8 @@ export const NotesProvider = ({ children }) => {
         setIsDirty,
         showColorOptions,
         setShowColorOptions,
+        gridView,
+        setGridView,
       }}
     >
       {children}

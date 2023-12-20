@@ -7,6 +7,7 @@ import {
   deleteNote,
   getNoteById,
   getNotesByUserId,
+  searchNote,
   updateNote,
 } from "./controller/note.controller.js";
 import {
@@ -47,6 +48,7 @@ app.get("/notes", verifyToken, getNotesByUserId);
 app.get("/notes/:id", verifyToken, getNoteById);
 app.patch("/notes/:id", verifyToken, updateNote);
 app.delete("/notes/:id", verifyToken, deleteNote);
+app.post("/notes/search", verifyToken, searchNote);
 
 // Connect Server
 app.listen(PORT, () => console.log(`SERVER RUNNING ON PORT:${PORT}`));

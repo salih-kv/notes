@@ -24,7 +24,7 @@
 }
 
 body {
-  @apply no-scrollbar;
+  @apply no-scrollbar dark:bg-p-dark;
   font-family: "Poppins", sans-serif;
   overflow: -moz-scrollbars-none;
   scrollbar-width: none;
@@ -46,8 +46,13 @@ form {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
+.grid-view {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .input {
-  @apply w-full px-4 py-3 mb-4 mt-2 rounded-lg outline-none placeholder:text-sm;
+  @apply w-full px-2 py-3 mb-4 mt-2 rounded-lg outline-none placeholder:text-sm placeholder:text-black/60 bg-transparent;
 }
 
 .form-input {
@@ -64,4 +69,16 @@ form {
 
 .btn-small {
   @apply p-2 rounded-full hover:bg-black/10;
+}
+
+/* Nav */
+
+.nav {
+  @apply w-44 fixed left-0 top-0 z-10 h-screen border-r bg-white dark:bg-p-dark transition-[left] duration-300 ease-in-out;
+}
+.nav.open {
+  @apply left-0;
+}
+.nav.closed {
+  @apply -left-44 md:left-0;
 }

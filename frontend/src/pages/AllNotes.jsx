@@ -1,7 +1,7 @@
 import { useNotes } from "../context/NotesContext";
 import { Note } from "../components/Note";
 export const AllNotes = () => {
-  const { notes } = useNotes();
+  const { notes, gridView } = useNotes();
 
   const latestNotes = notes
     ? notes
@@ -27,6 +27,8 @@ export const AllNotes = () => {
         .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
     : [];
 
+  const view = gridView ? "grid-view" : "notes-cont";
+
   return (
     <div className="mt-16 p-4 md:p-12">
       {pinnedNotes.length > 0 && (
@@ -40,7 +42,7 @@ export const AllNotes = () => {
         </>
       )}
       <h1 className="mb-4 font-medium text-lg">All Notes</h1>
-      <section className="notes-cont gap-6">
+      <section className={`${view} gap-6`}>
         {latestNotes?.map((note) => (
           <Note key={note._id} note={note} />
         ))}

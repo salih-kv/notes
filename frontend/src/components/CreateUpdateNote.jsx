@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import instance from "../axios/instance";
 import { useNotes } from "../context/NotesContext";
+import { formatDate } from "../utils/formatDate";
 
 export const CreateUpdateNote = () => {
   const {
@@ -14,6 +15,8 @@ export const CreateUpdateNote = () => {
     isDirty,
     setIsDirty,
   } = useNotes();
+
+  const formattedDate = formatDate(noteToUpdate?.updatedAt);
 
   const [inputValues, setInputValues] = useState({
     title: "",
@@ -88,9 +91,13 @@ export const CreateUpdateNote = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-2 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel
+                  style={{ backgroundColor: noteToUpdate?.bgColor }}
+                  className="w-full max-w-sm h-72 transform overflow-hidden rounded-2xl bg-white p-4 text-left align-middle shadow-xl transition-all"
+                >
                   <input
                     type="text"
+                    style={{ backgroundColor: noteToUpdate?.bgColor }}
                     className="input !mb-0"
                     placeholder="Title"
                     value={inputValues.title}
@@ -98,13 +105,21 @@ export const CreateUpdateNote = () => {
                     onChange={handleInputChange}
                   />
                   <textarea
-                    rows="4"
+                    rows={4}
+                    style={{ backgroundColor: noteToUpdate?.bgColor }}
                     className="input !mt-0 resize-none"
                     placeholder="Take a note..."
                     name="content"
                     value={inputValues.content}
                     onChange={handleInputChange}
                   ></textarea>
+                  <div className="flex justify-start">
+                    {noteToUpdate?.updatedAt && (
+                      <p className=" text-black px-4 text-xs">
+                        Edited {formattedDate}
+                      </p>
+                    )}
+                  </div>
 
                   <div className="mt-2 flex justify-end items-center ">
                     <button
