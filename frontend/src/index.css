@@ -37,6 +37,18 @@ form {
   backdrop-filter: blur(10px);
 }
 
+.header {
+  @apply fixed z-50 gap-2 md:gap-6 w-full justify-between h-16 border-b px-4 flex items-center bg-white dark:bg-p-dark;
+}
+
+.search-input {
+  @apply border rounded-md px-10 text-sm py-2 w-full md:min-w-[500px] placeholder:text-black/60 placeholder:tracking-wide;
+}
+
+.create-note-btn {
+  @apply bg-black p-1 md:p-2 rounded-full text-white text-xl md:text-2xl;
+}
+
 .active {
   @apply text-black border-amber-500;
 }
@@ -74,11 +86,13 @@ form {
 /* Nav */
 
 .nav {
-  @apply w-44 fixed left-0 top-0 z-10 h-screen border-r bg-white dark:bg-p-dark transition-[left] duration-300 ease-in-out;
+  @apply w-44 fixed left-0 top-0 z-20 h-full border-r bg-white dark:bg-p-dark transition-[left] duration-300 ease-in-out;
 }
+
 .nav.open {
   @apply left-0;
 }
+
 .nav.closed {
   @apply -left-44 md:left-0;
 }
